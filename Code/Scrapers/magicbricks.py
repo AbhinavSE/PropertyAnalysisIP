@@ -24,32 +24,46 @@ class MagicbricksScraper(Scraper):
         self.wait_for_element(".mb-search__btn", click=True)
         search_btn = self.driver.find_element(By.CSS_SELECTOR, ".mb-search__btn")
         self.driver.execute_script("arguments[0].click();", search_btn)
+        sleep(2)
 
     def get_all_posts(self):
         # get all links with Xpath for posts under div with itemtype=//schema.org/Apartment and meta itemprop=url
         self.wait_for_element("//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']", By.XPATH)
         urls = self.driver.find_elements(By.XPATH, "//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']")
+        self.driver.get_screenshot_as_file('ss.png')
         urls = [url.get_attribute("content") for url in urls]
         return urls
 
     def extract(self, urls):
         post_list = []
         for url in tqdm(urls):
-            post_dict = {}
-            # post_dict['url'] = post.find_element(By.XPATH, "./meta[@itemprop='url']").get_attribute("content")
-            # post_dict['title'] = post.find_element(By.XPATH, "./meta[@itemprop='name']").get_attribute("content")
-            # post_dict['description'] = post.find_element(By.XPATH, "./meta[@itemprop='description']").get_attribute("content")
-            # post_dict['address'] = post.find_element(By.XPATH, "./meta[@itemprop='address']/meta[@itemprop='addressLocality']").get_attribute("content")
-            # post_dict['number_of_rooms'] = post.find_element(By.XPATH, "./meta[@itemprop='numberOfRooms']").get_attribute("content")
-            # post_dict['floor_size'] = post.find_element(By.XPATH, "./meta[@itemprop='floorSize']").get_attribute("content")
-            self.driver.get(url)
-            self.wait_for_element('.p_title', By.CSS_SELECTOR)
-            titles = self.driver.find_elements(By.CSS_SELECTOR, '.p_title')
-            values = self.driver.find_elements(By.CSS_SELECTOR, '.p_value')
-            for title, value in zip(titles, values):
-                post_dict[title.text] = value.text
-            post_list.append(post_dict)
-            # self.driver.back()
+            try:
+                post_dict = {}
+                print(f'Scraping {url}')
+                self.driver.get(url)
+                sleep(2)
+                self.wait_for_element('.p_title', By.CSS_SELECTOR)
+
+                titles = self.driver.find_elements(By.CSS_SELECTOR, '.p_title')
+                values = self.driver.find_elements(By.CSS_SELECTOR, '.p_value')
+                for title, value in zip(titles, values):
+                    post_dict[title.text] = value.text
+                print(len(post_dict))
+
+                self.wait_for_element('.detailsLabel', By.CSS_SELECTOR)
+                details_labels = self.driver.find_elements(By.CSS_SELECTOR, ".detailsLabel")
+                detaisl_val = self.driver.find_elements(By.CSS_SELECTOR, ".detailsVal")
+                self.driver.get_screenshot_as_file('ss.png')
+                for title, value in zip(details_labels, detaisl_val):
+                    post_dict[title.text] = value.text
+                print(len(post_dict))
+                # .rLabel
+
+                post_list.append(post_dict)
+            except Exception as e:
+                print('Failed to scrape {url} due to: {e}')
+                
+
         return post_list
 
     def run(self):
