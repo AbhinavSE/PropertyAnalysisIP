@@ -29,8 +29,9 @@ class MagicbricksScraper(Scraper):
     def get_all_posts(self):
         # get all links with Xpath for posts under div with itemtype=//schema.org/Apartment and meta itemprop=url
         self.wait_for_element("//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']", By.XPATH)
+        self.scroll_down(times=3)
         urls = self.driver.find_elements(By.XPATH, "//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']")
-        self.driver.get_screenshot_as_file('ss.png')
+        # self.driver.get_screenshot_as_file('ss.png')
         urls = [url.get_attribute("content") for url in urls]
         return urls
 
@@ -57,11 +58,10 @@ class MagicbricksScraper(Scraper):
                 for title, value in zip(details_labels, detaisl_val):
                     post_dict[title.text] = value.text
                 print(len(post_dict))
-                # .rLabel
 
                 post_list.append(post_dict)
             except Exception as e:
-                print('Failed to scrape {url} due to: {e}')
+                print(f'Failed to scrape {url} due to: {e}')
                 
 
         return post_list

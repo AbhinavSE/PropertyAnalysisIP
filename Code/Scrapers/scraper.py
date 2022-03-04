@@ -1,5 +1,6 @@
 # Imports
 import os
+from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
@@ -33,6 +34,20 @@ class Scraper:
             print("Timed out waiting for element")
             return False
         return True
+
+    def scroll_down(self, times=1, delay=2):
+        last_height = self.driver.execute_script(
+            "return document.body.scrollHeight")
+        for _ in range(times):
+            print('\tScrolling')
+            self.driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);")
+            sleep(delay)
+            new_height = self.driver.execute_script(
+                "return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
 
     def search(self):
         pass
