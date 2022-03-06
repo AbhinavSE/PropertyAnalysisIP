@@ -1,3 +1,4 @@
+import os
 from time import sleep
 
 import pandas as pd
@@ -33,38 +34,37 @@ class MagicbricksScraper(Scraper):
         urls = self.driver.find_elements(By.XPATH, "//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']")
         # self.driver.get_screenshot_as_file('ss.png')
         urls = [url.get_attribute("content") for url in urls]
+        print(f'Found {len(urls)} posts')
         return urls
 
-    def extract(self, urls):
-        post_list = []
-        for url in tqdm(urls):
+    def extract(self, urls, post_list):
+        for i, url in enumerate(urls):
+            print(f'[{i+1}/{len(urls)}] Scraping {url}')
+            print('--------------------------------------------------')
             try:
-                post_dict = {}
-                print(f'Scraping {url}')
+                post_dict = {'url': url}
                 self.driver.get(url)
                 sleep(2)
-                self.wait_for_element('.p_title', By.CSS_SELECTOR)
 
+                self.wait_for_element('.p_title', By.CSS_SELECTOR)
                 titles = self.driver.find_elements(By.CSS_SELECTOR, '.p_title')
                 values = self.driver.find_elements(By.CSS_SELECTOR, '.p_value')
                 for title, value in zip(titles, values):
                     post_dict[title.text] = value.text
-                print(len(post_dict))
+                print(f'Scraped 1')
 
                 self.wait_for_element('.detailsLabel', By.CSS_SELECTOR)
                 details_labels = self.driver.find_elements(By.CSS_SELECTOR, ".detailsLabel")
                 detaisl_val = self.driver.find_elements(By.CSS_SELECTOR, ".detailsVal")
-                self.driver.get_screenshot_as_file('ss.png')
+                # self.driver.get_screenshot_as_file('ss.png')
                 for title, value in zip(details_labels, detaisl_val):
                     post_dict[title.text] = value.text
-                print(len(post_dict))
+                print(f'Scraped 2')
 
                 post_list.append(post_dict)
             except Exception as e:
                 print(f'Failed to scrape {url} due to: {e}')
-                
-
-        return post_list
+            print(f'Posts scraped: {len(post_list)}')
 
     def run(self):
         try:
@@ -72,8 +72,11 @@ class MagicbricksScraper(Scraper):
             self.driver.get(self.index_url)
             self.search()
             posts = self.get_all_posts()
-            post_list = self.extract(posts)
-            pd.DataFrame(post_list).to_csv("../Data/magicbricks.csv", index=False)
+            post_list = []
+            try:
+                self.extract(posts, post_list)
+            finally:
+                pd.DataFrame(post_list).to_csv(os.getcwd() + "/Data/magicbricks.csv", index=False)
 
         finally:
             self.driver.quit()
