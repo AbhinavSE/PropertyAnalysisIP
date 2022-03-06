@@ -46,22 +46,20 @@ class MagicbricksScraper(Scraper):
                 self.driver.get(url)
                 sleep(2)
 
-                self.wait_for_element('.p_title', By.CSS_SELECTOR)
+                self.wait_for_element('.propOverView', By.CSS_SELECTOR)
                 titles = self.driver.find_elements(By.CSS_SELECTOR, '.propOverView .p_title')
                 values = self.driver.find_elements(By.CSS_SELECTOR, '.propOverView .p_value')
                 print(len(titles), len(values))
                 for title, value in zip(titles, values):
                     post_dict[title.text] = value.text
-                print(*post_dict.items(), sep='\n')
-                # print(f'Scraped 1')
 
-                # self.wait_for_element('.detailsLabel', By.CSS_SELECTOR)
-                # details_labels = self.driver.find_elements(By.CSS_SELECTOR, ".detailsLabel")
-                # detaisl_val = self.driver.find_elements(By.CSS_SELECTOR, ".detailsVal")
-                # # self.driver.get_screenshot_as_file('ss.png')
-                # for title, value in zip(details_labels, detaisl_val):
-                #     post_dict[title.text] = value.text
-                print(f'Scraped 2')
+                self.wait_for_element('#propertyDetailTabData', By.CSS_SELECTOR)
+                titles = self.driver.find_elements(By.CSS_SELECTOR, "#propertyDetailTabData .p_title")
+                values = self.driver.find_elements(By.CSS_SELECTOR, "#propertyDetailTabData .p_value")
+                print(len(titles), len(values))
+                for title, value in zip(titles, values):
+                    post_dict[title.text] = value.text
+                print(*post_dict.values(), sep='\n')
 
                 post_list.append(post_dict)
             except Exception as e:
