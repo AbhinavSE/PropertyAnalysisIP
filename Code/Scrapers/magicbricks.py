@@ -49,19 +49,21 @@ class MagicbricksScraper(Scraper):
                 self.wait_for_element('.propOverView', By.CSS_SELECTOR)
                 titles = self.driver.find_elements(By.CSS_SELECTOR, '.propOverView .p_title')
                 values = self.driver.find_elements(By.CSS_SELECTOR, '.propOverView .p_value')
-                print(len(titles), len(values))
+                print(f'propOverView: {len(titles), len(values)}')
                 for title, value in zip(titles, values):
-                    post_dict[title.text] = value.text
+                    if title != '' and title is not None:
+                        post_dict[title.text] = value.text
 
                 self.wait_for_element('#propertyDetailTabData', By.CSS_SELECTOR)
                 titles = self.driver.find_elements(By.CSS_SELECTOR, "#propertyDetailTabData .p_title")
                 values = self.driver.find_elements(By.CSS_SELECTOR, "#propertyDetailTabData .p_value")
-                print(len(titles), len(values))
+                print(f'propertyDetailTabData: {len(titles), len(values)}')
                 for title, value in zip(titles, values):
-                    post_dict[title.text] = value.text
-                print(*post_dict.values(), sep='\n')
+                    if title != '' and title is not None:
+                        post_dict[title.text] = value.text
 
                 post_list.append(post_dict)
+                print()
             except Exception as e:
                 print(f'Failed to scrape {url} due to: {e}')
             print(f'Posts scraped: {len(post_list)}')
