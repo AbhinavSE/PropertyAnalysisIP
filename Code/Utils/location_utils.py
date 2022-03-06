@@ -10,13 +10,6 @@ class location_utils():
     API_KEY = "AhbvYTADoexgk9EW4R5SyOu92avR1sTw"
     POI_CATEGORIES = None
 
-    def get_location(address):
-        url = f'https://api.tomtom.com/search/2/geocode/{urllib.parse.quote(address)}.json?key={location_utils.API_KEY}'
-        req = urllib.request.urlopen(url)
-        data = req.read().decode('utf-8')
-        data = json.loads(data)
-        return data['results'][0]['position']['lat'], data['results'][0]['position']['lon']
-
     def get_POI_categories():
         if location_utils.POI_CATEGORIES:
             return location_utils.POI_CATEGORIES
@@ -28,6 +21,13 @@ class location_utils():
         for category in data['poiCategories']:
             location_utils.POI_CATEGORIES[category['name']] = category['id']
         return location_utils.POI_CATEGORIES
+
+    def get_location(address):
+        url = f'https://api.tomtom.com/search/2/geocode/{urllib.parse.quote(address)}.json?key={location_utils.API_KEY}'
+        req = urllib.request.urlopen(url)
+        data = req.read().decode('utf-8')
+        data = json.loads(data)
+        return data['results'][0]['position']['lat'], data['results'][0]['position']['lon']
 
     def get_location_series(address_series):
         lat_series = []
