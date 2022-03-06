@@ -40,14 +40,17 @@ class _99acresScraper(Scraper):
                 post_dict = {'url': url}
                 self.driver.get(url)
                 sleep(2)
-                self.wait_for_element('#pdPrice')
-                post_dict['price'] = self.driver.find_element(By.CSS_SELECTOR, "#pdPrice").text
-                post_dict['area'] = self.driver.find_element(By.CSS_SELECTOR, "#pricePerUnitArea").text
-                post_dict['bhk'] = self.driver.find_element(By.CSS_SELECTOR, "#bedWash b:nth-child(1)").text
-                post_dict['bath'] = self.driver.find_element(By.CSS_SELECTOR, "b+ b").text
+                # self.wait_for_element('#pdPrice')
+                # post_dict['price'] = self.driver.find_element(By.CSS_SELECTOR, "#pdPrice").text
 
                 self.wait_for_element('#FactTableComponent')
-
+                titles = self.driver.find_elements(By.CSS_SELECTOR, "#FactTableComponent .component__tableHead")
+                values = self.driver.find_elements(By.CSS_SELECTOR, "#FactTableComponent .component__details")
+                for title, value in zip(titles, values):
+                    post_dict[title.text] = value.text
+                
+                self.wait_for_element('.NearByLocation__infoText')
+                post_dict['Nearby'] = [e.text for e in self.driver.find_elements(By.CSS_SELECTOR, '.NearByLocation__infoText') if e.text != '']
 
                 print(*post_dict.items(), sep='\n')
                 post_list.append(post_dict)
