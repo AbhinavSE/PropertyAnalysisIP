@@ -26,7 +26,6 @@ class _99acresScraper(Scraper):
             self.driver.quit()
 
     def get_all_posts(self):
-        # get all links with Xpath for posts under div with itemtype=//schema.org/Apartment and meta itemprop=url
         urls = self.driver.find_elements(By.CSS_SELECTOR, ".srpTop__tuplesWrap section a")
         urls = [url.get_attribute('href') for url in urls if url.get_attribute('href') is not None][1:]
         print(f'Found {len(urls)} posts')

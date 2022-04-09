@@ -27,10 +27,10 @@ class MagicbricksScraper(Scraper):
         self.driver.execute_script("arguments[0].click();", search_btn)
         sleep(2)
 
-    def get_all_posts(self):
+    def get_all_posts(self, pages):
         # get all links with Xpath for posts under div with itemtype=//schema.org/Apartment and meta itemprop=url
         self.wait_for_element("//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']", By.XPATH)
-        self.scroll_down(times=3)
+        self.scroll_down(times=pages)
         urls = self.driver.find_elements(By.XPATH, "//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']")
         # self.driver.get_screenshot_as_file('ss.png')
         urls = [url.get_attribute("content") for url in urls]
@@ -63,17 +63,16 @@ class MagicbricksScraper(Scraper):
                         post_dict[title.text] = value.text
 
                 post_list.append(post_dict)
-                print()
             except Exception as e:
                 print(f'Failed to scrape {url} due to: {e}')
             print(f'Posts scraped: {len(post_list)}')
 
-    def run(self):
+    def run(self, pages=2):
         try:
             self.driver.maximize_window()
             self.driver.get(self.index_url)
             self.search()
-            posts = self.get_all_posts()
+            posts = self.get_all_posts(pages)
             post_list = []
             try:
                 self.extract(posts, post_list)
