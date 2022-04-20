@@ -57,18 +57,20 @@ class LocationUtils():
 
     def get_address_rating(address):
         if type(address) == str:
-            print(address)
+            # print(address)
             try:
                 lat, lon = LocationUtils.get_location(address)
                 POIs = LocationUtils.get_nearby_POIs(lat, lon)
                 score = sum([LocationUtils.is_POI_relevant(poi) for poi in POIs])
                 return score
             except HTTPError as e:
-                print(f'Address: {address}')
-                print(f'HTTP Error: {e}')
+                # print(f'Address: {address}')
+                # print(f'HTTP Error: {e}')
+                return 0
             except Exception as e:
-                print(f'Address: {address}')
-                print(f'Exception: {e}')
+                # print(f'Address: {address}')
+                # print(f'Exception: {e}')
+                return 0
 
     def get_location_series(address_series):
         lat_series = []

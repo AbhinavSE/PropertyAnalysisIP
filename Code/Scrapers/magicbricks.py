@@ -11,6 +11,17 @@ class MagicbricksScraper(Scraper):
     def __init__(self):
         super().__init__()
         self.index_url = "https://www.magicbricks.com/property-for-sale-rent-in-New%20Delhi/residential-real-estate-New%20Delhi"
+        self.save_location = "Data/magicbricks.csv"
+    
+    def get_saved_posts(self):
+        df = pd.read_csv(self.save_location)
+        return set(df['url'].tolist())
+    
+    def save_posts(self, post_list):
+        df = pd.read_csv(self.save_location)
+        df = df.append(post_list, ignore_index=True)
+        df.reset_index(drop=True).to_csv(self.save_location, index=False)
+        
     
     def search(self):
         sleep(2)
@@ -32,9 +43,11 @@ class MagicbricksScraper(Scraper):
         self.wait_for_element("//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']", By.XPATH)
         self.scroll_down(times=pages)
         urls = self.driver.find_elements(By.XPATH, "//*[@itemtype='//schema.org/Apartment']/meta[@itemprop='url']")
-        # self.driver.get_screenshot_as_file('ss.png')
         urls = [url.get_attribute("content") for url in urls]
-        print(f'Found {len(urls)} posts')
+        print(f'Total posts found: {len(urls)}')
+        # Remove already scraped urls
+        urls = [url for url in urls if url not in self.get_saved_posts()]
+        print(f'Total posts left: {len(urls)}')
         return urls
 
     def extract(self, urls, post_list):
@@ -67,7 +80,7 @@ class MagicbricksScraper(Scraper):
                 print(f'Failed to scrape {url} due to: {e}')
             print(f'Posts scraped: {len(post_list)}')
 
-    def run(self, pages=2):
+    def run(self, pages=10):
         try:
             self.driver.maximize_window()
             self.driver.get(self.index_url)
@@ -77,7 +90,7 @@ class MagicbricksScraper(Scraper):
             try:
                 self.extract(posts, post_list)
             finally:
-                pd.DataFrame(post_list).to_csv(os.getcwd() + "/Data/magicbricks.csv", index=False)
+                self.save_posts(post_list)
 
         finally:
             self.driver.quit()
