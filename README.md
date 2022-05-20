@@ -2,7 +2,7 @@
 
 Progress Report:
 
-1) Our first weeks were mainly focused on reading research papers. Two of which we found useful are attached below. The papers were based on properties in Valencia, Spain and Greater London.
+1) Our first weeks were mainly focused on reading research papers, of which the interesting ones are there in the Papers folder. The papers were based on properties in Valencia, Spain and Greater London.
 
 2) Next, we created two scraper classes from scratch using selenium in python. These were used to scrape property samples from magicbricks.com and 99acres.com. We searched for properties in New Delhi, and scraped all the relevant features of each properties. We currently have around 1000+ samples. We also did some preprocessing like removing null values, feature generation, outlier removal, etc.
 
