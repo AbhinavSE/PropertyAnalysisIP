@@ -10,12 +10,13 @@ from selenium.webdriver.common.by import By
 class MagicbricksScraper(Scraper):
     def __init__(self):
         super().__init__()
-        self.index_url = "https://www.magicbricks.com/property-for-sale-rent-in-New%20Delhi/residential-real-estate-New%20Delhi"
-        self.save_location = "Data/magicbricks.csv"
+        # self.index_url = "https://www.magicbricks.com/property-for-sale-rent-in-New%20Delhi/residential-real-estate-New%20Delhi"
+        self.index_url = "https://www.magicbricks.com/property-for-sale-rent-in-Jaipur/residential-real-estate-Jaipur"
+        self.save_location = "Data/magicbricks_jaipur.csv"
     
     def get_saved_posts(self):
         df = pd.read_csv(self.save_location)
-        return set(df['url'].tolist())
+        return set(df['url'].tolist()) if len(df) > 0 else set()
     
     def save_posts(self, post_list):
         df = pd.read_csv(self.save_location)
